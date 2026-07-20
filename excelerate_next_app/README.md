@@ -1,5 +1,21 @@
 # 🚀 EXCELERATE NEXT App
 
+Splash Screen UI
+<img width="1440" height="3040" alt="Screenshot_20260720_150343" src="https://github.com/user-attachments/assets/f270682f-67c8-48b4-b84d-8008d4baa0ec" />
+
+Login Screen UI
+<img width="1440" height="3040" alt="Screenshot_20260720_150427" src="https://github.com/user-attachments/assets/bd72286f-a24a-42bb-8cc0-4a973f760d91" />
+
+HomePage Screen UI
+<img width="1440" height="3040" alt="Screenshot_20260720_151015" src="https://github.com/user-attachments/assets/2a189b24-8cfa-4590-bf97-84b1a2ca1dc7" />
+
+Program Listing UI
+<img width="1440" height="3040" alt="Screenshot_20260720_150512_One UI Home" src="https://github.com/user-attachments/assets/95bf867d-74f5-49e4-b152-f364ba977a19" />
+
+Program details UI
+<img width="1440" height="3040" alt="Screenshot_20260720_150542" src="https://github.com/user-attachments/assets/3863206c-011e-43bc-9b94-eea35ab7374f" />
+
+
 A modern, fully responsive, and scalable mobile application built using Flutter. This project is developed as part of the **Excelerate Internship**, aiming to bridge the communication and engagement gap between learners and program admins through seamless UI/UX design and robust architecture.
 
 ## 👥 Meet The Team
@@ -115,5 +131,7 @@ Based on the MVP scope, the Week 2 frontend prototype has been successfully deve
 4. **Run the app:**
    ```bash
    flutter run
+
+   
 
 **Built with ❤️ by the Excelerate Next Team.**
