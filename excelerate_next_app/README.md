@@ -103,3 +103,17 @@ Based on the MVP scope, the Week 2 frontend prototype has been successfully deve
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/vivekg259/Flutter-Project.git
+
+2. **Navigate to the project directory:**
+   ```bash
+   cd excelerate_next_app
+   
+3. **Install dependencies:**
+   ```bash
+   flutter pub get
+   
+4. **Run the app:**
+   ```bash
+   flutter run
+
+**Built with ❤️ by the Excelerate Next Team.**
