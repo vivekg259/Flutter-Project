@@ -74,6 +74,8 @@ The app utilizes role-based views for two primary user groups:
 
 ## ✨ Week 2 UI Implementation Highlights
 
+<img width="887" height="587" alt="{4FAB04A8-A23E-4248-960D-796CB6B553E2}" src="https://github.com/user-attachments/assets/63c35c3d-217c-4cdf-8bb6-e30a498e2cec" />
+
 Based on the MVP scope, the Week 2 frontend prototype has been successfully developed and verified with **0 Analyzer Issues**:
 
 1. **Splash & Login Screen:** 3-second animated logo splash screen & modern login UI with soft-shadow cards.
@@ -93,8 +95,17 @@ Based on the MVP scope, the Week 2 frontend prototype has been successfully deve
 
 ## 🛠️ Tech Stack & Dependencies
 * **Framework:** Flutter (Dart)
-* **Fonts:** `google_fonts: ^latest`
+* **Fonts:** `google_fonts: poppins
 * **Architecture:** Component-based UI with centralized routing.
+
+---
+
+## **🔗 Links & Resources**
+Demo Video Walkthrough: [Watch 2-3 Min Screen Recording](https://drive.google.com/file/d/1mhUHH_wMDr1xI_buHh9M7VPLHi1OGiT8/view?usp=drivesdk)
+
+Figma Design File: [View Wireframes & Interactive Prototype](https://www.figma.com/proto/vsp7UVupcBbweynP0Xk3cB/Learning-app-prototype?node-id=0-1&t=4GhFpWVouJyeajPz-1)
+
+Internship Platform: [Excelerate Virtual Internship](https://experience.4excelerate.org/opportunities/Global%20Internships?category=Internship&tab=1)
 
 ---
 
