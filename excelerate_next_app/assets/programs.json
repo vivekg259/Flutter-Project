@@ -1,0 +1,56 @@
+[
+  {
+    "title": "Advanced Flutter & Dart Mastery",
+    "duration": "8 Weeks",
+    "level": "Intermediate",
+    "rating": "4.8 (2.1k reviews)",
+    "instructor": "Dr. Angela Yu",
+    "skills": "State Management, API Integration, Firebase",
+    "description": "Take your Flutter skills to the next level. Learn advanced State Management (Provider, Riverpod), REST API integration, and build production-ready iOS and Android apps from a single codebase."
+  },
+  {
+    "title": "Applied Data Science with Python",
+    "duration": "10 Weeks",
+    "level": "Advanced",
+    "rating": "4.7 (5.4k reviews)",
+    "instructor": "Andrew Ng",
+    "skills": "Machine Learning, Pandas, NumPy, Data Viz",
+    "description": "Master data analysis and machine learning using Python. You will learn to clean data, create visualizations, and build predictive models using real-world datasets."
+  },
+  {
+    "title": "MERN Full-Stack Bootcamp",
+    "duration": "12 Weeks",
+    "level": "Beginner",
+    "rating": "4.9 (8.2k reviews)",
+    "instructor": "Colt Steele",
+    "skills": "MongoDB, Express, React, Node.js",
+    "description": "Become a full-stack web developer. Learn to build interactive React frontends and powerful Node.js backends with MongoDB databases. Includes 5 real-world portfolio projects."
+  },
+  {
+    "title": "UI/UX Product Design Pro",
+    "duration": "6 Weeks",
+    "level": "Beginner",
+    "rating": "4.8 (3.5k reviews)",
+    "instructor": "Gary Simon",
+    "skills": "Figma, Wireframing, User Research",
+    "description": "Learn the complete design process from ideation to high-fidelity prototyping. Master Figma and learn how to create intuitive, accessible, and beautiful user interfaces."
+  },
+  {
+    "title": "Cloud Computing AWS Practitioner",
+    "duration": "4 Weeks",
+    "level": "Beginner",
+    "rating": "4.6 (1.2k reviews)",
+    "instructor": "Stephane Maarek",
+    "skills": "EC2, S3, IAM, Cloud Security",
+    "description": "Pass the AWS Certified Cloud Practitioner exam. Understand global cloud infrastructure, core AWS services, security architecture, and pricing models."
+  },
+  {
+    "title": "Digital Marketing & SEO Strategy",
+    "duration": "5 Weeks",
+    "level": "Intermediate",
+    "rating": "4.5 (4.8k reviews)",
+    "instructor": "Isaac Rudansky",
+    "skills": "Google Ads, SEO, Analytics, Social Media",
+    "description": "Grow any business online from scratch. Master search engine optimization, run profitable Google Ads campaigns, and understand audience analytics to maximize ROI."
+  }
+]
