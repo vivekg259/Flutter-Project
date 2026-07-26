@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'splash_screen.dart';
 import 'login_screen.dart';
+import 'signup_screen.dart';
 import 'home_screen.dart';
 import 'program_listing_screen.dart';
 import 'program_details_screen.dart';
@@ -55,6 +56,7 @@ class ExcelerateNextApp extends StatelessWidget {
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
+        '/signup': (context) => const SignupScreen(),
         '/home': (context) => const HomeScreen(),
         '/programs': (context) => const ProgramListingScreen(),
         '/details': (context) => const ProgramDetailsScreen(),

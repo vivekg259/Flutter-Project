@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProgramListingScreen extends StatefulWidget {
   const ProgramListingScreen({super.key});
@@ -8,79 +11,172 @@ class ProgramListingScreen extends StatefulWidget {
 }
 
 class _ProgramListingScreenState extends State<ProgramListingScreen> {
-  final List<Map<String, String>> programs = [
-    {
-      'title': 'Advanced Flutter & Dart Mastery',
-      'duration': '8 Weeks',
-      'level': 'Intermediate',
-      'rating': '4.8 (2.1k reviews)',
-      'instructor': 'Dr. Angela Yu',
-      'skills': 'State Management, API Integration, Firebase',
-      'description': 'Take your Flutter skills to the next level. Learn advanced State Management (Provider, Riverpod), REST API integration, and build production-ready iOS and Android apps from a single codebase.'
-    },
-    {
-      'title': 'Applied Data Science with Python',
-      'duration': '10 Weeks',
-      'level': 'Advanced',
-      'rating': '4.7 (5.4k reviews)',
-      'instructor': 'Andrew Ng',
-      'skills': 'Machine Learning, Pandas, NumPy, Data Viz',
-      'description': 'Master data analysis and machine learning using Python. You will learn to clean data, create visualizations, and build predictive models using real-world datasets.'
-    },
-    {
-      'title': 'MERN Full-Stack Bootcamp',
-      'duration': '12 Weeks',
-      'level': 'Beginner',
-      'rating': '4.9 (8.2k reviews)',
-      'instructor': 'Colt Steele',
-      'skills': 'MongoDB, Express, React, Node.js',
-      'description': 'Become a full-stack web developer. Learn to build interactive React frontends and powerful Node.js backends with MongoDB databases. Includes 5 real-world portfolio projects.'
-    },
-    {
-      'title': 'UI/UX Product Design Pro',
-      'duration': '6 Weeks',
-      'level': 'Beginner',
-      'rating': '4.8 (3.5k reviews)',
-      'instructor': 'Gary Simon',
-      'skills': 'Figma, Wireframing, User Research',
-      'description': 'Learn the complete design process from ideation to high-fidelity prototyping. Master Figma and learn how to create intuitive, accessible, and beautiful user interfaces.'
-    },
-    {
-      'title': 'Cloud Computing AWS Practitioner',
-      'duration': '4 Weeks',
-      'level': 'Beginner',
-      'rating': '4.6 (1.2k reviews)',
-      'instructor': 'Stephane Maarek',
-      'skills': 'EC2, S3, IAM, Cloud Security',
-      'description': 'Pass the AWS Certified Cloud Practitioner exam. Understand global cloud infrastructure, core AWS services, security architecture, and pricing models.'
-    },
-    {
-      'title': 'Digital Marketing & SEO Strategy',
-      'duration': '5 Weeks',
-      'level': 'Intermediate',
-      'rating': '4.5 (4.8k reviews)',
-      'instructor': 'Isaac Rudansky',
-      'skills': 'Google Ads, SEO, Analytics, Social Media',
-      'description': 'Grow any business online from scratch. Master search engine optimization, run profitable Google Ads campaigns, and understand audience analytics to maximize ROI.'
-    },
-  ];
+  List<dynamic> programs = [];
+  bool isLoading = true;
+  String errorMessage = '';
+
+  // Week 3: Special test program that always shows in the list.
+  // Tapping it triggers the error handling demo on the details screen.
+  static const Map<String, dynamic> _errorTestProgram = {
+    'id': 'error-test',
+    'title': 'Error Test Program',
+    'duration': 'N/A',
+    'level': 'Test',
+    'rating': 'N/A',
+    'instructor': 'System',
+    'skills': 'Error Handling',
+    'description':
+        "This program intentionally fails to demonstrate the app's error handling and retry flow.",
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProgramsFromApi();
+  }
+
+  // Dynamic Data Fetching without hardcoded lists or undefined index variables
+  Future<void> fetchProgramsFromApi() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://flutter-project-164c5-default-rtdb.firebaseio.com/.json'),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> fetchedData = json.decode(response.body);
+
+        final List<dynamic> loadedPrograms = fetchedData.map((item) {
+          return {
+            'id': item['id']?.toString() ?? '',
+            'title': item['title'] ?? 'Untitled Program',
+            'duration': item['duration'] ?? 'Self-Paced',
+            'level': item['level'] ?? 'All Levels',
+            'rating': item['rating'] ?? '4.5 (50 reviews)',
+            'instructor': item['instructor'] ?? 'Industry Specialist',
+            'skills': item['skills'] ?? 'General Skills',
+            'description': item['description'] ?? 'No description available.',
+          };
+        }).toList();
+
+        // Week 3: Append the error test program (avoid duplicates)
+        final bool alreadyExists = loadedPrograms
+            .any((p) => p['title'] == _errorTestProgram['title']);
+        if (!alreadyExists) {
+          loadedPrograms.add(Map<String, dynamic>.from(_errorTestProgram));
+        }
+
+        if (!mounted) return;
+        setState(() {
+          programs = loadedPrograms;
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Server returned status ${response.statusCode}');
+      }
+    } catch (e) {
+      // Fallback: If network API call fails, load directly from local JSON asset
+      _loadFromLocalAssets();
+    }
+  }
+
+  Future<void> _loadFromLocalAssets() async {
+    try {
+      final String jsonString =
+          await rootBundle.loadString('assets/data/programs.json');
+      final List<dynamic> localData = json.decode(jsonString);
+
+      // Week 3: Ensure the error test program is present (avoid duplicates)
+      final bool alreadyExists =
+          localData.any((p) => p['title'] == _errorTestProgram['title']);
+      if (!alreadyExists) {
+        localData.add(Map<String, dynamic>.from(_errorTestProgram));
+      }
+
+      if (mounted) {
+        setState(() {
+          programs = localData;
+          isLoading = false;
+        });
+      }
+    } catch (assetError) {
+      if (mounted) {
+        setState(() {
+          errorMessage =
+              'Unable to load programs. Please check your connection and try again.';
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Image.asset('assets/logo.png', height: 28),
+        title: Image.asset(
+          'assets/logo.png',
+          height: 28,
+          errorBuilder: (c, e, s) => const Text(
+            'Excelerate Programs',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF003366),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: ListView.builder(
+      body: isLoading
+          ? const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Color(0xFFFF6D00)),
+            SizedBox(height: 16),
+            Text('Loading programs...'),
+          ],
+        ),
+      )
+          : errorMessage.isNotEmpty
+          ? Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 60, color: Colors.red),
+              const SizedBox(height: 12),
+              Text(errorMessage, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: fetchProgramsFromApi,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry Fetch'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF6D00),
+                  foregroundColor: Colors.white,
+                ),
+              )
+            ],
+          ),
+        ),
+      )
+          : ListView.builder(
         padding: const EdgeInsets.all(20.0),
         itemCount: programs.length,
         itemBuilder: (context, index) {
           final program = programs[index];
           return GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/details', arguments: program);
+              Navigator.pushNamed(
+                context,
+                '/details',
+                arguments: program,
+              );
             },
             child: Container(
               margin: const EdgeInsets.only(bottom: 20.0),
@@ -88,32 +184,59 @@ class _ProgramListingScreenState extends State<ProgramListingScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  )
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.school, size: 28, color: Color(0xFFFF6D00)), 
+                      const Icon(
+                        Icons.school,
+                        size: 28,
+                        color: Color(0xFFFF6D00),
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          program['title']!,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF003366)),
+                          program['title']?.toString() ?? 'Untitled Program',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF003366),
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Container(height: 2, width: double.infinity, color: Colors.grey[200]),
+                  Container(
+                    height: 2,
+                    width: double.infinity,
+                    color: Colors.grey[200],
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildInfoIcon(Icons.access_time_filled, program['duration']!),
-                      _buildInfoIcon(Icons.bar_chart, program['level']!),
-                      _buildInfoIcon(Icons.star, program['rating']!.split(' ')[0]), 
+                      _buildInfoIcon(
+                        Icons.access_time_filled,
+                        program['duration']?.toString() ?? 'N/A',
+                      ),
+                      _buildInfoIcon(
+                        Icons.bar_chart,
+                        program['level']?.toString() ?? 'N/A',
+                      ),
+                      _buildInfoIcon(
+                        Icons.star,
+                        '${program['rating'] ?? 'N/A'}'.split(' ')[0],
+                      ),
                     ],
                   )
                 ],
@@ -131,7 +254,14 @@ class _ProgramListingScreenState extends State<ProgramListingScreen> {
       children: [
         Icon(icon, size: 18, color: const Color(0xFF0056D2)),
         const SizedBox(width: 6),
-        Text(text, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)),
+        Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            color: Colors.black87,
+          ),
+        ),
       ],
     );
   }
@@ -144,7 +274,6 @@ class _ProgramListingScreenState extends State<ProgramListingScreen> {
       backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
       onTap: (index) {
-        // FIXED: Added { } 
         if (index == currentIndex) {
           return;
         }
