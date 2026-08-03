@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for Firebase Authentication and Cloud Firestore network calls
+         in release builds. Debug/profile builds inherit a narrower manifest that
+         already declares this permission. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Excelerate Next"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -1,5 +1,5 @@
 name: excelerate_next_app
-description: "A new Flutter project."
+description: "Excelerate Next - A mobile-first learning and engagement platform connecting learners with program admins. Built with Flutter + Firebase."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -35,7 +35,17 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   google_fonts: ^8.2.0
-  http: ^1.6.0
+
+  # Firebase - Backend (Auth + Firestore)
+  firebase_core: ^4.12.1
+  firebase_auth: ^6.5.6
+  cloud_firestore: ^6.7.1
+
+  # State Management
+  provider: ^6.1.2
+
+  # Utilities
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -47,7 +57,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.14.4
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,7 +77,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.png
-    - assets/data/programs.json
+    - assets/app_icon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -94,9 +110,5 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-  # App icon,
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/app_icon.png"
-  min_sdk_android: 21
+dependency_overrides:
+  jni: 1.0.0

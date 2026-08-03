@@ -1,0 +1,184 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Helpers ----
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && userDoc().role == 'admin';
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---- users/{uid} ----
+    match /users/{uid} {
+      // Users can read their own doc; admins can read all
+      allow read: if isOwner(uid) || isAdmin();
+
+      // Only the user themselves can create their doc, and role MUST be 'learner'
+      allow create: if isOwner(uid)
+        && request.resource.data.role == 'learner'
+        && request.resource.data.keys().hasOnly([
+          'email', 'firstName', 'lastName', 'nationality',
+          'role', 'photoUrl', 'createdAt'
+        ])
+        && request.resource.data.email is string
+        && request.resource.data.firstName is string
+        && request.resource.data.lastName is string
+        && request.resource.data.nationality is string
+        && request.resource.data.createdAt is timestamp;
+
+      // Users can update only their own profile fields; admins can update any field.
+      // Email, role, createdAt, and document identity are immutable from clients.
+      allow update: if (isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['firstName', 'lastName', 'nationality', 'photoUrl']))
+        || isAdmin();
+
+      // Nobody can delete users (not even admins — manual Firebase console only)
+      allow delete: if false;
+    }
+
+    // ---- programs/{programId} ----
+    match /programs/{programId} {
+      // All signed-in users can read programs
+      allow read: if isSignedIn();
+
+      // Only admins can create programs. Validate required fields + ranges.
+      allow create: if isAdmin()
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.title.size() <= 150
+        && request.resource.data.capacity is number
+        && request.resource.data.capacity >= 0
+        && request.resource.data.capacity <= 10000
+        && request.resource.data.keys().hasAll([
+          'title', 'description', 'instructor', 'duration', 'level',
+          'skills', 'capacity', 'registeredCount', 'status', 'createdBy', 'createdAt'
+        ]);
+
+      // Signed-in users can only adjust aggregate counters in controlled
+      // increments/decrements. Admins can do full updates and deletes.
+      allow update: if isSignedIn() && (
+        // Learners adjusting counter fields via enrollment/feedback
+        (request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['registeredCount', 'rating', 'reviewsCount'])
+          && request.resource.data.registeredCount
+              >= resource.data.registeredCount - 1
+          && request.resource.data.registeredCount
+              <= resource.data.registeredCount + 1
+          && request.resource.data.registeredCount >= 0
+          && request.resource.data.rating >= 0
+          && request.resource.data.rating <= 5
+          && request.resource.data.reviewsCount >= 0
+          && request.resource.data.reviewsCount
+              <= resource.data.reviewsCount + 1)
+        ||
+        // Admins doing full program edits
+        isAdmin()
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ---- registrations/{regId} ----
+    match /registrations/{regId} {
+      // Users can read their own registrations; admins can read all
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+
+      // Learners can only create their own PENDING application documents.
+      // APPROVED / REJECTED / legacy states are reserved for admins.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'PENDING'
+        && request.resource.data.keys().hasOnly([
+          'programId', 'userId', 'userEmail', 'userName',
+          'status', 'registeredAt', 'programTitle', 'programInstructor'
+        ])
+        && request.resource.data.programId is string
+        && request.resource.data.userEmail is string
+        && request.resource.data.userName is string
+        && request.resource.data.registeredAt is timestamp
+        && exists(/databases/$(database)/documents/programs/$(request.resource.data.programId));
+
+      // A learner can only withdraw their own active application (status ->
+      // CANCELLED, nothing else changes). Admins can approve/reject or edit.
+      allow update: if (isOwner(resource.data.userId)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status'])
+        && request.resource.data.status == 'CANCELLED'
+        && resource.data.status in ['PENDING', 'APPROVED', 'registered'])
+        || isAdmin();
+
+      // Nobody can delete registrations
+      allow delete: if false;
+    }
+
+    // ---- announcements/{annId} ----
+    match /announcements/{annId} {
+      // All signed-in users can read announcements
+      allow read: if isSignedIn();
+
+      // Only admins can create. Enforce length limits.
+      allow create: if isAdmin()
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.title.size() <= 200
+        && request.resource.data.body is string
+        && request.resource.data.body.size() <= 5000
+        && request.resource.data.keys().hasAll([
+          'title', 'body', 'type', 'priority', 'createdBy', 'createdAt'
+        ]);
+
+      // Only admins can update or delete announcements
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- feedback/{feedbackId} ----
+    match /feedback/{feedbackId} {
+      // Admins can read all feedback; users can read their own
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      // Users can submit their own feedback. Validate schema, rating range,
+      // pace values, and that the stored overallRating matches the derived
+      // average. Feedback is immutable once submitted.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'programId', 'userId', 'contentRating', 'instructorRating',
+          'overallRating', 'pace', 'review', 'userName', 'userEmail',
+          'programTitle', 'createdAt'
+        ])
+        && request.resource.data.programId is string
+        && request.resource.data.contentRating is number
+        && request.resource.data.instructorRating is number
+        && request.resource.data.contentRating >= 1
+        && request.resource.data.contentRating <= 5
+        && request.resource.data.instructorRating >= 1
+        && request.resource.data.instructorRating <= 5
+        && request.resource.data.overallRating is number
+        && request.resource.data.overallRating
+            == (request.resource.data.contentRating
+              + request.resource.data.instructorRating) / 2
+        && request.resource.data.pace in ['too_slow', 'just_right', 'too_fast']
+        && request.resource.data.review is string
+        && request.resource.data.review.size() <= 2000
+        && request.resource.data.createdAt is timestamp;
+
+      // Feedback is immutable from clients; only admins may moderate.
+      allow update: if isAdmin();
+
+      // Nobody can delete feedback
+      allow delete: if false;
+    }
+  }
+}

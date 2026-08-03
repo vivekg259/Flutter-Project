@@ -1,69 +1,49 @@
+/// App entry point.
+///
+/// Initializes Firebase (only if real config is present), wires up all
+/// [ChangeNotifier] providers, and runs the [ExcelerateApp].
+///
+/// While Firebase is not yet configured ([DefaultFirebaseOptions.isConfigured]
+/// is false), the app still boots — screens will show friendly errors when
+/// they try to reach Firestore, but the UI shell is fully usable.
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
-import 'splash_screen.dart';
-import 'login_screen.dart';
-import 'signup_screen.dart';
-import 'home_screen.dart';
-import 'program_listing_screen.dart';
-import 'program_details_screen.dart';
-import 'feedback_screen.dart';
-import 'updates_screen.dart';
-import 'profile_screen.dart';
+import 'app.dart';
+import 'firebase_options.dart';
+import 'providers/announcement_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/program_provider.dart';
+import 'providers/registration_provider.dart';
 
-void main() {
-  runApp(const ExcelerateNextApp());
-}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class ExcelerateNextApp extends StatelessWidget {
-  const ExcelerateNextApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Excelerate Next',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        // Branding: Poppins Font globally applied
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF003366), // Deep Blue
-          primary: const Color(0xFF0056D2), // Blue for buttons
-          secondary: const Color(0xFFFF6D00), // Orange for Accent/Highlights
-        ),
-        scaffoldBackgroundColor: const Color(
-          0xFFF5F7FA,
-        ), // Light Gray/White Background
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF003366), // Deep Blue App Bar
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0056D2),
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12), // 12px Border Radius
-            ),
-          ),
-        ),
-      ),
-      // App now starts from Splash Screen
-      initialRoute: '/splash',
-      routes: {
-        '/splash': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/programs': (context) => const ProgramListingScreen(),
-        '/details': (context) => const ProgramDetailsScreen(),
-        '/feedback': (context) => const FeedbackScreen(),
-        '/updates': (context) => const UpdatesScreen(),
-        '/profile': (context) => const ProfileScreen(),
-      },
+  // Initialize Firebase only when real config is available.
+  // The placeholder config (isConfigured == false) lets the app compile
+  // and run the UI without a backend — see FIREBASE_SETUP.md.
+  if (DefaultFirebaseOptions.isConfigured) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
     );
   }
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<ProgramProvider>(
+          create: (_) => ProgramProvider(),
+        ),
+        ChangeNotifierProvider<AnnouncementProvider>(
+          create: (_) => AnnouncementProvider(),
+        ),
+        ChangeNotifierProvider<RegistrationProvider>(
+          create: (_) => RegistrationProvider(),
+        ),
+      ],
+      child: const ExcelerateApp(),
+    ),
+  );
 }

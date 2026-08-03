@@ -1,9 +1,9 @@
-# 🚀 EXCELERATE NEXT APP
+# 🚀 EXCELERATE NEXT App
 
 A modern, fully responsive, and scalable mobile application built using Flutter. This project is developed as part of the **Excelerate Internship**, aiming to bridge the communication and engagement gap between learners and program admins through seamless UI/UX design and robust architecture.
 
 ## 👥 Meet The Team
-* **Vivek Gupta**  - Project Lead & Lead Developer
+* **Vivek Gupta** (@vivekkg259) - Project Lead & Lead Developer
 * **Yash** - UI/UX Branding & QA 
 * **Khushi** - Figma Wireframing & Concept Design
 * **Sadia** - Team Lead & Documentation
@@ -72,43 +72,25 @@ The app utilizes role-based views for two primary user groups:
 
 ---
 
-## ✨ Week 2 UI Implementation Highlights
+## ✨ UI Implementation Highlights
 
 <img width="887" height="587" alt="{4FAB04A8-A23E-4248-960D-796CB6B553E2}" src="https://github.com/user-attachments/assets/63c35c3d-217c-4cdf-8bb6-e30a498e2cec" />
 
-## 📸 Week 2 UI Implementation Highlights
+Based on the MVP scope, the app has been built and verified with **0 Analyzer Issues**:
 
-* **Splash & Login Screen:** 3-second animated logo splash screen & modern login UI with soft-shadow cards.
-* **Dashboard (Home Screen):** User statistics, real-time styled announcements, and quick links.
-* **Programs Listing:** 6 Trending industry courses with Coursera-style cards (duration, level, rating badges).
-* **Program Details:** In-depth course view featuring Requirements, Skills to Gain, and Course Curriculum.
-* **Interactive Feedback Screen:** Fully functional star rating system, dynamic dropdowns, and course pace selection tags.
-* **Updates / Notifications:** Fully responsive list view with color-coded notification icons.
-* **Profile Screen:** User dashboard displaying certificates, subscriptions, and settings placeholders.
+1. **Splash & Login Screen:** Branded splash screen & modern login UI with soft-shadow cards.
+2. **Dashboard (Home Screen):** User statistics, real-time announcements, and quick links.
+3. **Programs Listing:** Live Firestore-driven programs with search, level filters, and rating badges.
+4. **Program Details:** In-depth course view with skills, eligibility, seats, and the enroll flow.
+5. **Interactive Feedback Screen:** Star rating system, course dropdown, and pace selection for enrolled learners.
+6. **Updates / Notifications:** Live Firestore announcements with color-coded notification icons.
+7. **Profile Screen:** Real user data (initials, role, nationality) with sign-out and profile options.
 
----
+**🎨 Branding & Design System Applied:**
+* **Typography:** `Poppins` (Google Fonts).
+* **Colors:** Deep Blue (`#003366`), Button Blue (`#0056D2`), Vibrant Orange Accent (`#FF6D00`).
+* **UI Structure:** White cards, 12-16px border radius, soft drop-shadows (completely eliminating harsh black wireframe borders), and fully responsive handling for all screen sizes (No RenderFlex overflow).
 
-## 🔄 Week 3 Updates & Changelog (API & Data Integration)
-
-During Week 3, the application transitioned from static UI layouts to a fully dynamic, data-driven prototype featuring mock API/JSON fetching, dynamic form validation, and asynchronous UX handling.
-
-### 1. Dynamic Data Fetching (Program Listing & Details)
-* **JSON/API Integration:** Replaced static hardcoded course texts on the **Program Listing** and **Program Details** screens with asynchronous data services fetching structured JSON payloads.
-* **Async UI Rendering:** Implemented `FutureBuilder` patterns to parse external JSON models (Course Title, Instructor, Duration, Level, Rating, Skills, and Curriculum).
-
-### 2. Dynamic UX & State Handling
-* **Loading Indicators:** Added central `CircularProgressIndicator` views while fetching local or remote JSON payloads.
-* **Error Handling & Fallbacks:** Built error-handling states (displaying user-friendly retry prompts) in the event of failed data requests or bad JSON formatting.
-
-### 3. Interactive Forms & Input Validation
-* **Course Feedback & Registration Forms:** Upgraded form controls using Flutter’s `Form` widget and explicit `GlobalKey<FormState>`.
-* **Field Validation Rules:**
-  * **Email Validation:** Checks for non-empty input and valid regex email structure (`user@domain.com`).
-  * **Password / Text Fields:** Enforces minimum character length requirements and non-empty checks.
-  * **Course Dropdowns & Ratings:** Ensures valid course selections and rating inputs prior to form submission.
-* **Feedback Submission Feedback:** Added clear `SnackBar` notifications confirming successful validation and mock API payload submission.
-
----
 ---
 
 ## 🛠️ Tech Stack & Dependencies
